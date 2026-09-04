@@ -12,7 +12,7 @@ builder.Services.AddSwaggerGen();
 
 
 //inject employee interface
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddSingleton<IEmployeeService, EmployeeService>();
 
 var app = builder.Build();
 
