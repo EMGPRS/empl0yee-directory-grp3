@@ -1,46 +1,50 @@
-﻿namespace EmployeeDirectory.Api.Services
+﻿using EmployeeDirectory.Api.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace EmployeeDirectory.Api.Services
 {
     public class EmployeeService : IEmployeeService
     {
+        private EmployeeDBContext _context;
 
-        private readonly List<Employee> _employees = new List<Employee>
+        public EmployeeService(EmployeeDBContext context)
         {
-            new Employee { Id = 1, FirstName = "John", LastName = "Doe", Email = "john.doe@example.com", Department = "HR", Gender = Gender.Male },
-            new Employee { Id = 2, FirstName = "Jane", LastName = "Smith", Email = "jane.smith@example.com", Department = "IT", Gender = Gender.Female },
-            new Employee { Id = 3, FirstName = "Michael", LastName = "Johnson", Email = "michael.johnson@example.com", Department = "Finance", Gender = Gender.Male }
-        };
-
-        public Task<Employee> AddEmployeeAsync(Employee employee)
-        {
-            employee.Id = _employees.Max(e => e.Id) + 1;
-            _employees.Add(employee);
-            return Task.FromResult(employee);
+            _context = context;
         }
 
-        public Task<bool> DeleteEmployeeAsync(int Id)
+        public async Task<Employee> AddEmployeeAsync(Employee employee)
         {
-            var employee = _employees.FirstOrDefault(e => e.Id == Id);
+            employee.Id = 0;
+            _context.Employees.Add(employee);
+            await _context.SaveChangesAsync(); //commit to the db
+            return employee;
+        }
+
+        public  async Task<bool> DeleteEmployeeAsync(int Id)
+        {
+            var employee = _context.Employees.FirstOrDefault(e => e.Id == Id);
             if (employee != null)
             {
-                _employees.Remove(employee);
-                return Task.FromResult(true);
+                _context.Employees.Remove(employee);
+                await _context.SaveChangesAsync();
+                return true;
             }
-            return Task.FromResult(false);
+            return false;
         }
 
-        public async Task<Employee> GetEmployeeAsync(int Id)
+        public  Task<Employee> GetEmployeeAsync(int Id)
         {
-            return await Task.FromResult(_employees.FirstOrDefault(e => e.Id == Id));
+            return _context.Employees.FirstOrDefaultAsync(x => x.Id == Id);
         }
 
-        public async Task<List<Employee>> GetEmployeesAsync()
+        public  Task<List<Employee>> GetEmployeesAsync()
         {
-            return await Task.FromResult(_employees);
+            return _context.Employees.OrderBy(x => x.FirstName).ToListAsync();
         }
 
-        public Task<Employee> UpdateEmployeeAsync(int Id, Employee employee)
+        public async Task<Employee> UpdateEmployeeAsync(int Id, Employee employee)
         {
-            var current = _employees.FirstOrDefault(e => e.Id == Id);
+            var current = _context.Employees.FirstOrDefault(e => e.Id == Id);
             if (current != null)
             {
                 current.FirstName = employee.FirstName;
@@ -48,9 +52,10 @@
                 current.Email = employee.Email;
                 current.Department = employee.Department;
                 current.Gender = employee.Gender;
-                return Task.FromResult(current);
+                await _context.SaveChangesAsync();
+                return current;
             }
-            return Task.FromResult<Employee>(null);
+            return null;
         }
     }
 }
