@@ -1,0 +1,82 @@
+﻿@model EmployeeViewModel
+@{
+    ViewData["Title"] = "Employee Directory";
+    var isEditing = Model.Employee.Id > 0;
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Employee #</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Gender</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var employee in Model.Employees)
+                    {
+                        <tr>
+                            <td class="ps-4">@employee.Id</td>
+                            <td>@employee.FirstName @employee.LastName</td>
+                            <td>@employee.Email</td>
+                            <td>@employee.Department</td>
+                            <td><span class="badge text-bg-light text-secondary border">@employee.Gender</span></td>
+                            <td class="text-end pe-4">
+                                <a class="btn btn-sm btn-outline-primary" asp-route-id="@employee.Id">Edit</a>
+                                <form class="d-inline" asp-action="Delete" method="post">
+                                    <input type="hidden" name="id" value="@employee.Id" />
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <form asp-action="Save" method="post" class="card shadow-sm p-4">
+            <div class="mb-4">
+                <p class="text-uppercase small text-primary fw-semibold mb-1">Employee details</p>
+                <h2 class="h4 mb-0">@(isEditing ? "Edit employee" : "Add employee")</h2>
+            </div>
+            <input asp-for="Employee.Id" type="hidden" />
+            <div class="mb-3">
+                <label asp-for="Employee.FirstName" class="form-label">First name</label>
+                <input asp-for="Employee.FirstName" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Employee.LastName" class="form-label">Last name</label>
+                <input asp-for="Employee.LastName" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Employee.Email" class="form-label">Email</label>
+                <input asp-for="Employee.Email" type="email" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Employee.Department" class="form-label">Department</label>
+                <input asp-for="Employee.Department" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Employee.Gender" class="form-label">Gender</label>
+                <select asp-for="Employee.Gender" class="form-select" required>
+                    <option value="">Choose...</option>
+                    <option value="1">Male</option>
+                    <option value="2">Female</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" type="submit">@(isEditing ? "Update" : "Add employee")</button>
+            @if (isEditing)
+            {
+                <a class="btn btn-link" asp-action="Index">Cancel</a>
+            }
+        </form>
+    </div>
+</div>
