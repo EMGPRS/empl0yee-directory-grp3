@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="EmployeeDirectory.Api.Tests/EmployeeDirectory.Api.Tests.csproj" Id="403179ae-b65f-4f14-a491-c87972a65624" />
   <Project Path="EmployeeDirectory.Api/EmployeeDirectory.Api.csproj" />
   <Project Path="EmployeeDirectory.Web/EmployeeDirectory.Web.csproj" Id="fb11b5a2-af9d-4f66-85c6-0d9a7462e37e" />
 </Solution>
