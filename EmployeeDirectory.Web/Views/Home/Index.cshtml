@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Employee Directory";
     var isEditing = Model.Employee.Id > 0;
+    var isAdmin = User.IsInRole("Admin");
 }
 
 <div class="row g-4">
@@ -28,11 +29,18 @@
                             <td>@employee.Department</td>
                             <td><span class="badge text-bg-light text-secondary border">@employee.Gender</span></td>
                             <td class="text-end pe-4">
-                                <a class="btn btn-sm btn-outline-primary" asp-route-id="@employee.Id">Edit</a>
-                                <form class="d-inline" asp-action="Delete" method="post">
-                                    <input type="hidden" name="id" value="@employee.Id" />
-                                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
-                                </form>
+                                @if (isAdmin)
+                                {
+                                    <a class="btn btn-sm btn-outline-primary" asp-route-id="@employee.Id">Edit</a>
+                                    <form class="d-inline" asp-action="Delete" method="post">
+                                        <input type="hidden" name="id" value="@employee.Id" />
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">View only</span>
+                                }
                             </td>
                         </tr>
                     }
@@ -41,8 +49,10 @@
         </div>
     </div>
 
-    <div class="col-lg-4">
-        <form asp-action="Save" method="post" class="card shadow-sm p-4">
+    @if (isAdmin)
+    {
+        <div class="col-lg-4">
+            <form asp-action="Save" method="post" class="card shadow-sm p-4">
             <div class="mb-4">
                 <p class="text-uppercase small text-primary fw-semibold mb-1">Employee details</p>
                 <h2 class="h4 mb-0">@(isEditing ? "Edit employee" : "Add employee")</h2>
@@ -77,6 +87,7 @@
             {
                 <a class="btn btn-link" asp-action="Index">Cancel</a>
             }
-        </form>
-    </div>
+            </form>
+        </div>
+    }
 </div>

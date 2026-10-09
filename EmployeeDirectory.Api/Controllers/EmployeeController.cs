@@ -1,4 +1,5 @@
-﻿using EmployeeDirectory.Api.Services;
+﻿using EmployeeDirectory.Api.Authorization;
+using EmployeeDirectory.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ namespace EmployeeDirectory.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.Viewer}")]
     public class EmployeeController : ControllerBase
     {
         private readonly Services.IEmployeeService _employeeService;
@@ -40,6 +41,7 @@ namespace EmployeeDirectory.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> AddEmployee(Employee employee)
         {
             var result = await _employeeService.AddEmployeeAsync(employee);
@@ -56,6 +58,7 @@ namespace EmployeeDirectory.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> UpdateEmployee(int id, Employee employee)
         {
             var result = await _employeeService.UpdateEmployeeAsync(id, employee);
@@ -63,6 +66,7 @@ namespace EmployeeDirectory.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = AppRoles.Admin)]
         public async Task<IActionResult> DeleteEmplyee(int id)
         {
             var result = await _employeeService.DeleteEmployeeAsync(id);

@@ -1,0 +1,28 @@
+name: Build and unit test
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore EmployeeDirectory.Api.slnx
+
+      - name: Build
+        run: dotnet build EmployeeDirectory.Api.slnx --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test EmployeeDirectory.Api.Tests\EmployeeDirectory.Api.Tests.csproj --configuration Release --no-build --verbosity normal

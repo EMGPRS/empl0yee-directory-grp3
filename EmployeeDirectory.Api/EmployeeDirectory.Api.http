@@ -1,6 +1,45 @@
 @EmployeeDirectory.Api_HostAddress = http://localhost:5244
 
-GET {{EmployeeDirectory.Api_HostAddress}}/weatherforecast/
+### Login as Viewer (the HTTP client stores the returned cookie)
+POST {{EmployeeDirectory.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "viewer",
+  "password": "viewer123"
+}
+
+### Viewer can read employees
+GET {{EmployeeDirectory.Api_HostAddress}}/api/employee
 Accept: application/json
 
-###
+### Viewer receives 403 for an Admin-only operation
+DELETE {{EmployeeDirectory.Api_HostAddress}}/api/employee/1
+
+### Login as Admin (replaces the current authentication cookie)
+POST {{EmployeeDirectory.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### Admin can add an employee
+POST {{EmployeeDirectory.Api_HostAddress}}/api/employee
+Content-Type: application/json
+
+{
+  "firstName": "Thandi",
+  "lastName": "Ndlovu",
+  "email": "thandi.ndlovu@example.com",
+  "department": "IT",
+  "gender": 2,
+  "mobileNumber": "0821234567"
+}
+
+### Show the current authenticated user
+GET {{EmployeeDirectory.Api_HostAddress}}/api/auth/me
+
+### Clear the authentication cookie
+POST {{EmployeeDirectory.Api_HostAddress}}/api/auth/logout

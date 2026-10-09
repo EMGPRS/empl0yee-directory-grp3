@@ -1,19 +1,25 @@
+using EmployeeDirectory.Web.Authorization;
 using EmployeeDirectory.Web.Models;
+using EmployeeDirectory.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace EmployeeDirectory.Web.Controllers
 {
+    [Authorize(Roles = $"{AppRoles.Admin},{AppRoles.Viewer}")]
     public class HomeController : Controller
     {
-        private readonly HttpClient _httpClient;
-        public HomeController(IHttpClientFactory httpClientFactory)
+        private readonly IEmployeeApiClient _employeeApiClient;
+
+        public HomeController(IEmployeeApiClient employeeApiClient)
         {
-            _httpClient = httpClientFactory.CreateClient("EmployeeDirectoryApi");
+            _employeeApiClient = employeeApiClient;
         }
-        public async Task<IActionResult> Index(int? id)
+
+        public async Task<IActionResult> Index(int? id, CancellationToken cancellationToken)
         {
-            var employees = await _httpClient.GetFromJsonAsync<List<Employee>>("api/employee");
+            var employees = await _employeeApiClient.GetEmployeesAsync(cancellationToken);
             Employee employee = new Employee();
             if (id.HasValue)
             {
@@ -29,7 +35,11 @@ namespace EmployeeDirectory.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(Employee employee)
+        [Authorize(Roles = AppRoles.Admin)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Save(
+            Employee employee,
+            CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -37,21 +47,25 @@ namespace EmployeeDirectory.Web.Controllers
             }
             if(employee.Id == 0)
             {
-                await _httpClient.PostAsJsonAsync("api/employee", employee);
+                await _employeeApiClient.AddEmployeeAsync(employee, cancellationToken);
             }
             else
             {
-                await _httpClient.PutAsJsonAsync($"api/employee/{employee.Id}", employee);
+                await _employeeApiClient.UpdateEmployeeAsync(employee, cancellationToken);
             }
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        [Authorize(Roles = AppRoles.Admin)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            await _httpClient.DeleteAsync($"api/employee/{id}");
+            await _employeeApiClient.DeleteEmployeeAsync(id, cancellationToken);
             return RedirectToAction("Index");
         }
+
+        [AllowAnonymous]
         public IActionResult Privacy()
         {
             return View();
