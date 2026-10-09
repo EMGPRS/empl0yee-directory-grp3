@@ -24,5 +24,5 @@ jobs:
       - name: Build
         run: dotnet build EmployeeDirectory.Api.slnx --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet test EmployeeDirectory.Api.Tests\EmployeeDirectory.Api.Tests.csproj --configuration Release --no-build --verbosity normal
+      - name: Run all solution tests
+        run: dotnet test EmployeeDirectory.Api.slnx --configuration Release --no-build --verbosity normal
