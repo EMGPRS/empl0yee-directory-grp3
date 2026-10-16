@@ -514,3 +514,24 @@ Before adapting this example for a real system:
 - add login throttling, account lockout, password reset, and audit logging;
 - never log passwords or cookie values;
 - move connection strings and other secrets to user secrets, environment variables, or a secret manager.
+
+## Announcement: Cookie Authentication Learning Resource
+
+A complete example of cookie-based authentication and role-based authorization is available in the Employee Directory repository:
+
+🔗 Repository: https://github.com/EMGPRS/empl0yee-directory-grp3
+
+📘 Step-by-step guide: https://github.com/EMGPRS/empl0yee-directory-grp3/blob/main/README.md
+
+The example demonstrates how to:
+
+- configure cookie authentication in ASP.NET Core;
+- implement login, logout, and current-user endpoints;
+- create `Admin` and `Viewer` roles;
+- protect API and MVC controller actions with `[Authorize]`;
+- return the correct `401 Unauthorized` and `403 Forbidden` API responses;
+- forward the authenticated API cookie from the MVC application;
+- test authentication with `WebApplicationFactory`;
+- run automated tests with GitHub Actions.
+
+Students can clone the repository, follow the guide, and adapt the implementation for their own ASP.NET Core API and MVC projects.
